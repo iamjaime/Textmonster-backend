@@ -21,7 +21,7 @@ class ServiceController extends Controller {
 	public function index()
 	{
 		$services = Service::all();
-		return Response::json(['success' => true, 'data' => $service], 200);
+		return Response::json(['success' => true, 'data' => $services], 200);
 	}
 
 	/**

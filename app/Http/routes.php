@@ -26,8 +26,8 @@ Route::controllers([
  */
 Route::group(['prefix' => 'api/v1', 'namespace' => 'Api\v1'], function() { 
 
-	Route::get('services', 'ServiceController');
-	Route::get('targets', 'TargetController');
+	Route::get('services', 'ServiceController@index');
+	Route::get('targets', 'TargetController@index');
 
 	Route::resource('users', 'UserController');
 	Route::resource('users.phones', 'PhoneController');
