@@ -51,7 +51,7 @@ class CreateTargets extends Migration {
 	 */
 	public function down()
 	{
-		Schema::drop('targets');
+		Schema::dropIfExists('targets');
 	}
 
 }

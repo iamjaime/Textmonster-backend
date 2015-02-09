@@ -1,0 +1,60 @@
+Text Monster Relational database data and API 1.0.0 sketch.
+
+Relationships
+----------------------------------
+A user has many phones
+
+A phone belongsTo a User
+
+A user has many Subscriptions
+
+A user has many orders
+
+A user has many messages
+
+==================================================
+
+Services
+----------
+GET    api/v1/services ( list all services available )
+
+USERS
+----------
+GET     api/v1/users ( list all users )
+POST    api/v1/users ( create user )
+PUT     api/v1/users/{id} ( update user )
+DELETE  api/v1/users/{id} ( delete user )
+
+
+Phones
+----------
+GET     api/v1/users/{id}/phones ( list all phones that belong to a user )
+POST    api/v1/users/{id}/phones/{phoneId} ( add a phone to a user )
+PUT     api/v1/users/{id}/phones/{phoneId} ( change a user's phone number )
+DELETE  api/v1/users/{id}/phones/{phoneId} ( delete a user's phone number )
+
+
+Orders
+----------
+GET    api/v1/users/{id}/orders ( list all orders for this user )
+GET    api/v1/users/{id}/orders/{orderId} ( show a specific order for a specific user )
+
+
+
+Subscribe
+---------
+GET     api/v1/users/{id}/subscriptions ( list all subscriptions for this specific user )
+POST    api/v1/users/{id}/subscriptions ( Create new subscription for a specific user )
+PUT     api/v1/users/{id}/subscriptions ( update subscription for a specific user )
+
+
+Messages
+----------
+GET    api/v1/users/{id}/messages ( list all messages sent from a specific user )
+GET    api/v1/users/{id}/messages/{messageId}  ( show a specific message from a specific user )
+
+
+Targets
+----------
+GET    api/v1/targets ( list all targets paginated with an "enabled", "last used", "time remaining" output )
+

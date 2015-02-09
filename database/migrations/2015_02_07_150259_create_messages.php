@@ -3,7 +3,7 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateSubscriptions extends Migration {
+class CreateMessages extends Migration {
 
 	/**
 	 * Run the migrations.
@@ -12,32 +12,35 @@ class CreateSubscriptions extends Migration {
 	 */
 	public function up()
 	{
-		Schema::create('subscriptions', function(Blueprint $table){
+		Schema::create('messages', function(Blueprint $table){
 			$table->increments('id');
 			$table->integer('user_id')->unsigned();
-			
-			$table->foreign('user_id')
-			->references('id')
+			$table->foreign('user_id')->
+			references('id')
 			->on('users')
 			->onDelete('cascade');
 
 			$table->integer('service_id')->unsigned();
-			
-			$table->foreign('service_id')
-			->references('id')
+			$table->foreign('service_id')->
+			references('id')
 			->on('services')
 			->onDelete('cascade');
 
-			$table->integer('phone_id')->unsigned();
-			
+			$table->integer('target_id')->unsigned();
+			$table->foreign('target_id')
+			->references('id')
+			->on('targets')
+			->onDelete('cascade');
+
+			$table->integer('phone_id')->unsigned(); //the phone it was sent from
 			$table->foreign('phone_id')
 			->references('id')
 			->on('phones')
 			->onDelete('cascade');
 
-			$table->string('link'); //The link that is being advertised. (each service type can have many links)
-
-			$table->boolean('active');
+			$table->string('message'); //the message sent
+			$table->boolean('ended'); //did the campaign end
+			
 
 			$table->timestamps();
 		});
@@ -50,7 +53,7 @@ class CreateSubscriptions extends Migration {
 	 */
 	public function down()
 	{
-		Schema::dropIfExists('subscriptions');
+		Schema::dropIfExists('messages');
 	}
 
 }

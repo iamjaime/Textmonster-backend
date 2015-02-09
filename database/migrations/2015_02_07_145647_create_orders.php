@@ -3,7 +3,7 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreatePhones extends Migration {
+class CreateOrders extends Migration {
 
 	/**
 	 * Run the migrations.
@@ -12,16 +12,22 @@ class CreatePhones extends Migration {
 	 */
 	public function up()
 	{
-		Schema::create('phones', function(Blueprint $table){
+		Schema::create('orders', function(Blueprint $table){
 			$table->increments('id');
 			$table->integer('user_id')->unsigned();
-			
-			$table->foreign('user_id')
-			->references('id')
+			$table->foreign('user_id')->
+			references('id')
 			->on('users')
 			->onDelete('cascade');
 
-			$table->integer('phone_number');
+			$table->integer('service_id')->unsigned();
+			$table->foreign('service_id')->
+			references('id')
+			->on('services')
+			->onDelete('cascade');
+
+			$table->string('transaction_id');
+			$table->integer('payment_amount'); //in cents
 			$table->timestamps();
 		});
 	}
@@ -33,7 +39,7 @@ class CreatePhones extends Migration {
 	 */
 	public function down()
 	{
-		Schema::dropIfExists('phones');
+		Schema::dropIfExists('orders');
 	}
 
 }
