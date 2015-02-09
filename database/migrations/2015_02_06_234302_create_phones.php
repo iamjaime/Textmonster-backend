@@ -21,7 +21,7 @@ class CreatePhones extends Migration {
 			->on('users')
 			->onDelete('cascade');
 
-			$table->integer('phone_number');
+			$table->string('phone_number');
 			$table->timestamps();
 		});
 	}
