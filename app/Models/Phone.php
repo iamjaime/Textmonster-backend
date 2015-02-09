@@ -24,5 +24,8 @@ class Phone extends Model {
 	 * @var array
 	 */
 	protected $hidden = [];	
-
+	
+	public function User(){
+		return $this->belongsTo('App\Models\User');
+	}
 }
