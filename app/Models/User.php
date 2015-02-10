@@ -2,13 +2,14 @@
 
 use Illuminate\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Auth\Passwords\CanResetPassword;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
 
 class User extends Model implements AuthenticatableContract, CanResetPasswordContract {
 
-	use Authenticatable, CanResetPassword;
+	use Authenticatable, CanResetPassword, SoftDeletes;
 
 	/**
 	 * The database table used by the model.
@@ -29,22 +30,40 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 	 *
 	 * @var array
 	 */
-	protected $hidden = ['password', 'remember_token'];
+	protected $hidden = ['password', 'remember_token', 'deleted_at'];
 
+	/**
+	 * The soft deleted date
+	 */
+	protected $dates = ['deleted_at'];
+
+	public $createRules = [
+		'name' => 'required', 
+		'email' =>'required|unique:users,email|email', 
+		'password' => 'required|confirmed|min:6',
+		'password_confirmation' => 'required|min:6'
+	];
+
+	public $updateRules = [
+		'name' => 'sometimes|required', 
+		'email' =>'sometimes|required|unique:users,email|email',
+		'password' => 'sometimes|required|confirmed|min:6',
+		'password_confirmation' => 'sometimes|required|min:6'
+	];
 
 	public function Phones(){
-		return $this->hasMany('App\Models\Phone');
+		return $this->hasMany('App\Models\Phone', 'user_id', 'id');
 	}
 
 	public function Subscriptions(){
-		return $this->hasMany('App\Models\Subscription');
+		return $this->hasMany('App\Models\Subscription', 'user_id', 'id');
 	}
 
 	public function Orders(){
-		return $this->hasMany('App\Models\Order');
+		return $this->hasMany('App\Models\Order', 'user_id', 'id');
 	}
 
 	public function Messages(){
-		return $this->hasMany('App\Models\Message');
+		return $this->hasMany('App\Models\Message', 'user_id', 'id');
 	}
 }

@@ -25,7 +25,15 @@ class Phone extends Model {
 	 */
 	protected $hidden = [];	
 	
+	public $createRules = [
+		'phone_number' => 'required|min:10|unique:phones,phone_number'
+	];
+
+	public $updateRules = [
+		'phone_number' => 'required|min:10|unique:phones,phone_number'
+	];
+
 	public function User(){
-		return $this->belongsTo('App\Models\User');
+		return $this->belongsTo('App\Models\User', 'user_id', 'id');
 	}
 }

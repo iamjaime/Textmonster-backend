@@ -43,6 +43,7 @@ class CreateMessages extends Migration {
 			
 
 			$table->timestamps();
+			$table->softDeletes();
 		});
 	}
 

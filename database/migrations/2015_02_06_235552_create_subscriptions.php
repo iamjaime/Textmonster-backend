@@ -36,9 +36,7 @@ class CreateSubscriptions extends Migration {
 			->onDelete('cascade');
 
 			$table->string('link'); //The link that is being advertised. (each service type can have many links)
-
 			$table->boolean('active');
-
 			$table->timestamps();
 		});
 	}

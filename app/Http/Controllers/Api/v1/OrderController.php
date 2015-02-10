@@ -8,20 +8,29 @@ use Illuminate\Http\Request;
 use \Response;
 use \Input;
 
+use App\Models\User;
 use App\Models\Order;
 
 
 class OrderController extends Controller {
+
+	public $order;
+	public $user;
+
+	function __construct(User $user, Order $order){
+		$this->user = $user;
+		$this->order = $order;
+	}
 
 	/**
 	 * Display a listing of the resource.
 	 *
 	 * @return Response
 	 */
-	public function index()
+	public function index($userId)
 	{
-		$order = Order::all();
-		return Response::json(['success' => true, 'data' => $order], 200);
+		$user = $this->user->with('orders')->findOrFail($userId);
+		return Response::json(['success' => true, 'data' => $user], 200);
 	}
 
 	/**
@@ -52,7 +61,8 @@ class OrderController extends Controller {
 	 */
 	public function show($id)
 	{
-		//
+		$order = $this->order->findOrFail($id);
+		return Response::json(['success' => true, 'data' => $order], 200);
 	}
 
 	/**

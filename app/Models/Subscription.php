@@ -2,7 +2,12 @@
 
 use Illuminate\Database\Eloquent\Model;
 
-class Subscription extends Model {
+use Laravel\Cashier\Billable;
+use Laravel\Cashier\Contracts\Billable as BillableContract;
+
+class Subscription extends Model implements BillableContract{
+
+	use Billable;
 
 	/**
 	 * The database table used by the model.
@@ -25,4 +30,10 @@ class Subscription extends Model {
 	 */
 	protected $hidden = [];	
 
+	
+	protected $dates = ['trial_ends_at', 'subscription_ends_at'];
+
+	public function User(){
+		return $this->belongsTo('App\Models\User', 'user_id');
+	}
 }

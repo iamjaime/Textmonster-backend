@@ -29,6 +29,7 @@ class CreateOrders extends Migration {
 			$table->string('transaction_id');
 			$table->integer('payment_amount'); //in cents
 			$table->timestamps();
+			$table->softDeletes();
 		});
 	}
 

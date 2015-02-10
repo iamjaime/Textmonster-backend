@@ -31,7 +31,7 @@ return [
 
 	'stripe' => [
 		'model'  => 'User',
-		'secret' => '',
+		'secret' => $_ENV['STRIPE_SECRET'],
 	],
 
 ];

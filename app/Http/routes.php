@@ -30,8 +30,15 @@ Route::group(['prefix' => 'api/v1', 'namespace' => 'Api\v1'], function() {
 	Route::get('targets', 'TargetController@index');
 
 	Route::resource('users', 'UserController');
+	Route::post('users/{id}/restore', 'UserController@restore');
+
 	Route::resource('users.phones', 'PhoneController');
+	
 	Route::resource('users.subscriptions', 'SubscriptionController');
+
+	Route::get('users/{userId}/subscriptions/{serviceId}/phone/{phoneId}/create', 'SubscriptionController@create');
+	Route::post('users/{userId}/subscriptions/{serviceId}/phone/{phoneId}/create', 'SubscriptionController@store');
+
 	Route::resource('users.orders', 'OrderController');
 	Route::resource('users.messages', 'MessageController');
 
