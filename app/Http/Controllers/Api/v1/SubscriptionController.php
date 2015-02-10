@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 
 use \Response;
 use \Input;
+use \Validator;
+use \Mail;
 
 use App\Models\Subscription;
 use App\Models\User;
@@ -75,9 +77,12 @@ class SubscriptionController extends Controller {
 	 * @param  int  $id
 	 * @return Response
 	 */
-	public function show($id)
+	public function show($userId, $subscriptionId)
 	{
-		//
+		$subscription = $this->subscription;
+		$subscription = $subscription->findOrFail($subscriptionId);
+
+		return Response::json(['success' => true, 'data' => $subscription], 200);
 	}
 
 	/**
@@ -89,6 +94,74 @@ class SubscriptionController extends Controller {
 	public function edit($id)
 	{
 		//
+	}
+
+	/**
+	 * Check if user has subscription to service
+	 */
+	public function isActive()
+	{
+		$attr = Input::get('data');
+		$rules = [
+			'user_id' => 'required',
+			'service_id' => 'required',
+			'phone_number' => 'required',
+			'link' => 'required'
+		];
+
+		$validator = Validator::make($attr, $rules);
+
+		if($validator->fails()){
+			$errors = $validator->messages();
+			return Response::json(['success' => false, 'errors' => $errors], 400);
+		}
+		
+		//If we pass validation....
+		$phone = Phone::where('phone_number', '=', $attr['phone_number'])->first();
+		
+		if(!$phone){
+			return Response::json(['success' => false, 'errors' => ['This phone number does not exist.'] ], 400);
+		}
+
+		//lets check if the user is subscribed to this service
+		$subscriptionService = $this->subscription
+		->where('user_id', '=', $attr['user_id'])
+		->where('service_id', '=', $attr['service_id'])
+		->where('phone_id', '=', $phone->id)
+		->first();
+
+		if(!$subscriptionService){
+			return Response::json(['success' => false, 'errors' => ['You are NOT subscribed to this service with this phone number.'] ], 400);
+		}
+
+
+		$subscription = $this->subscription
+		->where('user_id', '=', $attr['user_id'])
+		->where('service_id', '=', $attr['service_id'])
+		->where('phone_id', '=', $phone->id)
+		->where('link', '=', $attr['link'])
+		->first();
+
+		if(!$subscription){
+			return Response::json(['success' => false, 'errors' => ['You ARE subscribed to this service with this phone number but NOT with this link.'] ], 400);
+		}
+
+		//check if stripe plan is active 
+		if(!$subscription->stripe_active){
+			//subscription was cancelled.
+			//lets show active until the end date of the subscription
+			$today = strtotime(date('Y-m-d H:i:s'));
+			$subscriptionEnds = strtotime($subscription->subscription_ends_at);
+			if($subscriptionEnds <= $today){
+				$active = false; 
+			}else{
+				$active = true;
+			}
+		}else{
+			$active = true;
+		}
+
+		return Response::json(['success' => true, 'active' => $active, 'data' => $subscription], 200);
 	}
 
 	/**
@@ -108,9 +181,34 @@ class SubscriptionController extends Controller {
 	 * @param  int  $id
 	 * @return Response
 	 */
-	public function destroy($id)
+	public function destroy($userId, $subscriptionId)
 	{
-		//
+		//cancel subscription
+		$user = User::findOrFail($userId);
+		$subscription = $this->subscription->findOrFail($subscriptionId);
+		$subscription->subscription()->cancel();
+		
+		return Response::json([
+			'success' => true, 
+			'msg' => 'the subscription has been canceled'
+			], 200);
 	}
 
+
+	/**
+	 * Handles the IPN from Stripe. (AKA Web Hooks)
+	 * On stripe.
+	 */
+	public function transaction()
+	{	
+		$attrs = Input::all();
+
+		Mail::send('emails.stripetest', $attrs, function($message)
+		{
+		  $message->to('jaime@iamjaime.com', 'Jaime B')
+		          ->subject('Testing Stripe');
+		});
+		
+		return Response::json(['dataPosted' => $attrs], 200);
+	}
 }

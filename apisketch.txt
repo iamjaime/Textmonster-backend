@@ -29,7 +29,7 @@ DELETE  api/v1/users/{id} ( delete user )
 Phones **(Complete)
 ----------
 GET     api/v1/users/{id}/phones ( list all phones that belong to a user )
-POST    api/v1/users/{id}/phones/{phoneId} ( add a phone to a user )
+POST    api/v1/users/{id}/phones ( add a phone to a user )
 PUT     api/v1/users/{id}/phones/{phoneId} ( change a user's phone number )
 DELETE  api/v1/users/{id}/phones/{phoneId} ( delete a user's phone number )
 
@@ -41,11 +41,13 @@ GET    api/v1/users/{id}/orders/{orderId} ( show a specific order for a specific
 
 
 
-Subscribe
+Subscribe **(Complete)
 ---------
 GET     api/v1/users/{id}/subscriptions ( list all subscriptions for this specific user )
-POST    api/v1/users/{id}/subscriptions ( Create new subscription for a specific user )
-PUT     api/v1/users/{id}/subscriptions ( update subscription for a specific user )
+GET     api/v1/users/{id}/subscriptions/{subscriptionId} ( show a specific subscription ) 
+GET     api/v1/users/{userId}/service/{serviceId}/phone/{phoneId}/subscribe ( Shows the subscription view )
+POST    api/v1/users/{userId}/service/{serviceId}/phone/{phoneId}/subscribe ( data received from stripe )
+DELETE  api/v1/users/{id}/subscriptions/{subscriptionId} ( cancel subscription for a specific user )
 
 
 Messages
