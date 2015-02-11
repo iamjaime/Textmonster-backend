@@ -30,8 +30,6 @@ class WelcomeController extends Controller {
 	 */
 	public function index()
 	{
-		echo '<pre>';
-		print_r($_ENV);
 		return view('welcome');
 	}
 
