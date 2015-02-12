@@ -30,7 +30,7 @@ return [
 	],
 
 	'stripe' => [
-		'model'  => 'Subscription',
+		'model'  => 'App\Models\Subscription',
 		'secret' => $_ENV['STRIPE_SECRET'],
 	],
 

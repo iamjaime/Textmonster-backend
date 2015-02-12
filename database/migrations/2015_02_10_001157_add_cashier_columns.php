@@ -37,8 +37,9 @@ class AddCashierColumns extends Migration {
 	 */
 	public function down()
 	{
-		Schema::table('users', function(Blueprint $table)
+		Schema::table('subscriptions', function(Blueprint $table)
 		{
+			$table->dropForeign('subscriptions_stripe_plan_foreign');
 			$table->dropColumn(
 				'stripe_active', 'stripe_id', 'stripe_subscription', 'stripe_plan', 'last_four', 'trial_ends_at', 'subscription_ends_at'
 			);

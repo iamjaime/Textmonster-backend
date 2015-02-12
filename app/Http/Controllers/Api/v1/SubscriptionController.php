@@ -14,13 +14,16 @@ use App\Models\Subscription;
 use App\Models\User;
 use App\Models\Service;
 use App\Models\Phone;
+use App\Models\Order;
 
 class SubscriptionController extends Controller {
 
 	public $subscription;
 
-	function __construct(Subscription $subscription){
+	function __construct(Subscription $subscription, Order $order, User $user){
 		$this->subscription = $subscription;
+		$this->order = $order;
+		$this->user = $user;
 	}
 
 	/**
@@ -203,12 +206,97 @@ class SubscriptionController extends Controller {
 	{	
 		$attrs = Input::all();
 
-		Mail::send('emails.stripetest', $attrs, function($message)
+		switch($attrs['type'])
 		{
-		  $message->to('jaime@iamjaime.com', 'Jaime B')
-		          ->subject('Testing Stripe');
-		});
+			case 'charge.succeeded':
+			//the transaction was successful....
+			//lets grab the subscription
+			$subscription = $this->subscription
+			->where('stripe_id', '=', $attrs['data']['object']['customer'])
+			->first();
+
+			if(!$subscription){
+				return Response::json(['success' => false, 'error' => 'subscription not found'], 400);
+			}
+
+			//now we need to add the order to the order history table only if paid.
+			if($attrs['data']['object']['paid']){
+				$new_order = new $this->order;
+				$new_order->user_id = $subscription->user_id;
+				$new_order->subscription_id = $subscription->id;
+				$new_order->service_id = $subscription->service_id;
+				$new_order->transaction_id = $attrs['data']['object']['id'];
+				$new_order->payment_amount = $attrs['data']['object']['amount'];
+				$new_order->save();
+			}
+
+			//now we need to check if the subscription is active, else activate it!
+			//check if stripe plan is active 
+			if(!$subscription->stripe_active){
+				//subscription was cancelled.
+				//lets show active until the end date of the subscription
+				$today = strtotime(date('Y-m-d H:i:s'));
+				$subscriptionEnds = strtotime($subscription->subscription_ends_at);
+				if($subscriptionEnds <= $today){
+					$active = false; 
+				}else{
+					$active = true;
+				}
+			}else{
+				$active = true;
+			}
+
+
+			if(!$active){
+				//activate the subscription
+				$subscription->stripe_active = 1; 
+				$subscription->save();
+			}
+
+			return Response::json([ 'success' => true, 'data' => $subscription ], 200);
+			
+			break;
+
+			//---------------------------------------------------
+			case 'charge.failed':
+			//the payment failed, update the database
+			//we should prob de-activate the account here.
+			//lets grab the subscription
+			$subscription = $this->subscription
+			->where('stripe_id', '=', $attrs['data']['object']['customer'])
+			->first();
+
+			if(!$subscription){
+				return Response::json(['success' => false, 'error' => 'subscription not found'], 400);
+			}
+
+			//check if stripe plan is active 
+			if(!$subscription->stripe_active){
+				//subscription was cancelled.
+				//lets show active until the end date of the subscription
+				$today = strtotime(date('Y-m-d H:i:s'));
+				$subscriptionEnds = strtotime($subscription->subscription_ends_at);
+				if($subscriptionEnds <= $today){
+					$active = false; 
+				}else{
+					$active = true;
+				}
+			}else{
+				$active = true;
+			}
+
+
+			if($active){
+				//activate the subscription
+				$subscription->stripe_active = 0; 
+				$subscription->save();
+			}
+
+			return Response::json([ 'success' => true, 'data' => $subscription ], 200);
+			
+			break;
+		}
 		
-		return Response::json(['dataPosted' => $attrs], 200);
+		return Response::json(['dataPosted' => $attrs['data']['object']], 200);
 	}
 }

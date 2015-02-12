@@ -26,6 +26,12 @@ class CreateOrders extends Migration {
 			->on('services')
 			->onDelete('cascade');
 
+			$table->integer('subscription_id')->unsigned();
+			$table->foreign('subscription_id')->
+			references('id')
+			->on('subscriptions')
+			->onDelete('cascade');
+
 			$table->string('transaction_id');
 			$table->integer('payment_amount'); //in cents
 			$table->timestamps();
