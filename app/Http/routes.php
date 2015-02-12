@@ -33,7 +33,7 @@ Route::group(['prefix' => 'api/v1', 'namespace' => 'Api\v1'], function() {
 	Route::post('service/active', 'SubscriptionController@isActive');
 
 	//Handles the IPN for stripe. (called webhooks in stripe)
-	Route::post('service/stripe', 'SubscriptionController@transaction');
+	Route::post('service/stripe', 'Laravel\Cashier\WebhookController@handleWebhook');
 
 	//List all targets and allow target searching....
 	Route::get('targets', 'TargetController@index');
