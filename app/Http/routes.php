@@ -24,6 +24,10 @@ Route::controllers([
 /**
  * Text Monster API Version 1.0.0
  */
+
+//Handles the IPN for stripe. (called webhooks in stripe)
+Route::post('service/stripe', 'Laravel\Cashier\WebhookController@handleWebhook');
+
 Route::group(['prefix' => 'api/v1', 'namespace' => 'Api\v1'], function() { 
 
 	//List all services provided by text monster
@@ -31,9 +35,6 @@ Route::group(['prefix' => 'api/v1', 'namespace' => 'Api\v1'], function() {
 	
 	//lets check if the service is active for a user...
 	Route::post('service/active', 'SubscriptionController@isActive');
-
-	//Handles the IPN for stripe. (called webhooks in stripe)
-	Route::post('service/stripe', 'Laravel\Cashier\WebhookController@handleWebhook');
 
 	//List all targets and allow target searching....
 	Route::get('targets', 'TargetController@index');
