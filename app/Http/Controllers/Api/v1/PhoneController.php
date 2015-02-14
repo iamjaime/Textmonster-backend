@@ -27,10 +27,10 @@ class PhoneController extends Controller {
 	 *
 	 * @return Response
 	 */
-	public function index()
+	public function index($userId)
 	{
-		$phone = $this->user->phones();
-		return Response::json(['success' => true, 'data' => $phone], 200);
+		$phones = $this->phone->where('user_id', '=', $userId)->get();
+		return Response::json(['success' => true, 'data' => $phones], 200);
 	}
 
 	/**

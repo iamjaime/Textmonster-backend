@@ -19,7 +19,6 @@ Route::group(['namespace' => 'Laravel\Cashier'], function(){
 	//Route::post('service/stripe', 'WebhookController@handleWebhook');
 });
 
-
 /**
  * Default Namespace for all controllers
  */
@@ -38,7 +37,6 @@ Route::group(['namespace' => 'App\Http\Controllers'], function(){
 
 		//Handles the IPN for stripe. (called webhooks in stripe)
 		Route::post('service/stripe', 'SubscriptionController@transaction');
-
 
 		//List all targets and allow target searching....
 		Route::get('targets', 'TargetController@index');

@@ -229,7 +229,7 @@ class SubscriptionController extends Controller {
 			$subscription = $this->subscription->where('stripe_subscription', '=', $payload['data']['object']['id'])->first();
 			$subscription->active = 0;
 			$subscription->save();
-
+			
 			//lets do a soft delete....
 			$subscriptionId = $subscription->id;
 			$subscription->delete($subscriptionId);
