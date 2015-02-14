@@ -20,7 +20,7 @@ class TargetController extends Controller {
 	 */
 	public function index()
 	{
-		$target = Target::all();
+		$target = Target::paginate(20);
 		return Response::json(['success' => true, 'data' => $target], 200);
 	}
 
