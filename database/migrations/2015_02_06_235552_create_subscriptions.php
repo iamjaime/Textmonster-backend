@@ -38,6 +38,7 @@ class CreateSubscriptions extends Migration {
 			$table->string('link'); //The link that is being advertised. (each service type can have many links)
 			$table->boolean('active');
 			$table->timestamps();
+			$table->softDeletes();
 		});
 	}
 

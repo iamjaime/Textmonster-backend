@@ -1,13 +1,14 @@
 <?php namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 use Laravel\Cashier\Billable;
 use Laravel\Cashier\Contracts\Billable as BillableContract;
 
 class Subscription extends Model implements BillableContract{
 
-	use Billable;
+	use Billable, SoftDeletes;
 
 	/**
 	 * The database table used by the model.
@@ -28,10 +29,10 @@ class Subscription extends Model implements BillableContract{
 	 *
 	 * @var array
 	 */
-	protected $hidden = [];	
+	protected $hidden = ['deleted_at'];	
 
 	
-	protected $dates = ['trial_ends_at', 'subscription_ends_at'];
+	protected $dates = ['trial_ends_at', 'subscription_ends_at', 'deleted_at'];
 
 	public function User(){
 		return $this->belongsTo('App\Models\User', 'user_id');
