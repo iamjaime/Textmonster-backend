@@ -12,15 +12,17 @@ use \Hash;
 use \Auth;
 
 use App\Models\User;
+use App\Models\Phone;
 
 class UserController extends Controller {
 
 	public $user;
 	public $token;
 
-	function __construct(Validator $validator, User $user, Request $request){
+	function __construct(Validator $validator, User $user, Request $request, Phone $phone){
 		$this->token = $request->header('X-AUTH-TOKEN');
 		$this->user = $user;
+		$this->phone = $phone;
 	}
 
 	/**
@@ -68,6 +70,12 @@ class UserController extends Controller {
 		$attr['password'] = Hash::make($attr['password']);
 		$this->user->fill($attr);
 		$this->user->save();
+		$user_id = $this->user->id;
+
+		$phone = new $this->phone;
+		$phone->phone_number = $attr['phone_number'];
+		$phone->user_id = $user_id;
+		$phone->save();
 
 		return Response::json(['success' => true, 'data' => $this->user], 220);
 	}
@@ -98,14 +106,13 @@ class UserController extends Controller {
 	/**
 	 * Update the specified resource in storage.
 	 *
-	 * @param  int  $id
 	 * @return Response
 	 */
-	public function update($id)
+	public function update()
 	{
 		$attr = Input::get('data');
 
-		$user = $this->user->where('api_token', '=', $this->token)->first();
+		$user = $this->user->where('api_token', '=', $this->token)->with('phones', 'subscriptions')->first();
 		$rules = $this->user->updateRules;
 		
 		$validator = Validator::make($attr, $rules);

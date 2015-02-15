@@ -16,13 +16,13 @@ A user has many friends
 
 ==================================================
 
-Services 
+Services ** (Complete)
 ----------
 GET     api/v1/services ( list all services available for authenticated user. )
 POST    api/v1/services/active  ( checks if a service is active for this authenticated user. )
 POST    api/v1/services/stripe  ( handles the webhook (payment failed, cancel subscription etc.) )
 
-USERS   
+USERS   ** (Complete)
 ----------
 POST    api/v1/users/signup  ( create a new user )
 POST    api/v1/users/login   ( login an existing user )
@@ -31,7 +31,7 @@ GET     api/v1/users         ( gets the authenticated user info )
 DELETE  api/v1/users         ( de-activate the authenticated user account )
 
 
-Phones 
+Phones ** (Complete)
 ----------
 GET     api/v1/phones           ( list all phones that belong to the authenticated user )
 POST    api/v1/phones           ( add a phone to the authenticated user )
@@ -39,13 +39,13 @@ PUT     api/v1/phones/{phoneId} ( change the authenticated user's phone number )
 DELETE  api/v1/phones/{phoneId} ( delete the authenticated user's phone number )
 
 
-Orders 
+Orders ** (Complete)
 ----------
 GET    api/v1/orders            ( list all orders for the authenticated user )
 GET    api/v1/orders/{orderId}  ( show a specific order for the authenticated user )
 
 
-Subscribe 
+Subscribe 	
 ---------
 GET     api/v1/subscriptions                  ( list all subscriptions for the authenticated user )
 GET     api/v1/subscriptions/{subscriptionId} ( show a specific subscription for the authenticated user ) 
@@ -64,12 +64,14 @@ Targets
 GET    api/v1/targets ( list all targets paginated with an "enabled", "last used", "time remaining" output )
 
 
-Friends
+
+Friends ** (Complete)
 ----------
 GET     api/v1/friends                    ( list all friends from the authenticated user )
 DELETE  api/v1/friends/remove			  ( Delete a friend for authenticated user )
 
 GET     api/v1/friends/requests           ( list all friend requests for the authenticated user )
+
 POST    api/v1/friends/requests/accept    ( Accept a friend request for the authenticated user )
 POST    api/v1/friends/requests/make      ( Make a friend request from authenticated user )
 POST    api/v1/friends/requests/decline   ( Decline a friend request )

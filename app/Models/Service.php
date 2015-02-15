@@ -25,4 +25,9 @@ class Service extends Model {
 	 */
 	protected $hidden = [];	
 
+	public $activeRules = [
+		'phone_number' => 'required|min:10',
+		'service_id' => 'required',
+		'link' => 'required'
+	];
 }

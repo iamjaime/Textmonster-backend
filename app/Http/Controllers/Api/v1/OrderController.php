@@ -16,8 +16,10 @@ class OrderController extends Controller {
 
 	public $order;
 	public $user;
+	public $token;
 
-	function __construct(User $user, Order $order){
+	function __construct(User $user, Order $order, Request $request){
+		$this->token = $request->header('X-AUTH-TOKEN');
 		$this->user = $user;
 		$this->order = $order;
 	}
@@ -27,10 +29,11 @@ class OrderController extends Controller {
 	 *
 	 * @return Response
 	 */
-	public function index($userId)
+	public function index()
 	{
-		$user = $this->user->with('orders')->findOrFail($userId);
-		return Response::json(['success' => true, 'data' => $user], 200);
+		$user = $this->user->where('api_token', '=', $this->token)->with('orders')->first();
+		$order = $this->order->where('user_id', '=', $user->id)->get();
+		return Response::json(['success' => true, 'data' => $order], 200);
 	}
 
 	/**
@@ -59,9 +62,13 @@ class OrderController extends Controller {
 	 * @param  int  $id
 	 * @return Response
 	 */
-	public function show($id)
+	public function show($orderId)
 	{
-		$order = $this->order->findOrFail($id);
+		$user = $this->user->where('api_token', '=', $this->token)->first();
+		$order = $this->order->where('user_id', '=', $user->id)->where('id', '=', $orderId)->first();
+		if(!$order){
+			return Response::json(['success' => false, 'errors' => 'The order id does not exist or does not belong to this user.'], 400);
+		}
 		return Response::json(['success' => true, 'data' => $order], 200);
 	}
 

@@ -29,9 +29,10 @@ class PhoneController extends Controller {
 	 *
 	 * @return Response
 	 */
-	public function index($userId)
+	public function index()
 	{
-		$phones = $this->phone->where('user_id', '=', $userId)->get();
+		$user = $this->user->where('api_token', '=', $this->token)->first();
+		$phones = $this->phone->where('user_id', '=', $user->id)->get();
 		return Response::json(['success' => true, 'data' => $phones], 200);
 	}
 
@@ -50,10 +51,10 @@ class PhoneController extends Controller {
 	 *
 	 * @return Response
 	 */
-	public function store($userId)
+	public function store()
 	{
+		$user = $this->user->where('api_token', '=', $this->token)->first();
 		$attr = Input::get('data');
-		$user = $this->user->findOrFail($userId);
 		$rules = $this->phone->createRules;
 
 		$validator = Validator::make($attr, $rules);
@@ -64,6 +65,7 @@ class PhoneController extends Controller {
 		}
 
 		//after validation success, lets save the number (through relationship)
+		$attr['user_id'] = $user->id;
 		$phone = new $this->phone($attr);
 		$user->phones()->save($phone);
 
@@ -77,8 +79,9 @@ class PhoneController extends Controller {
 	 * @param  int  $phoneId
 	 * @return Response
 	 */
-	public function show($userId, $phoneId)
+	public function show($phoneId)
 	{
+		$user = $this->user->where('api_token', '=', $this->token)->first();
 		$phone = $this->phone->findOrFail($phoneId);
 		return Response::json(['success' => true, 'data' => $phone], 200);
 	}
@@ -97,14 +100,13 @@ class PhoneController extends Controller {
 	/**
 	 * Update the specified resource in storage.
 	 *
-	 * @param  int  $userId
 	 * @param  int  $phoneId
 	 * @return Response
 	 */
-	public function update($userId, $phoneId)
+	public function update($phoneId)
 	{
 		$attr = Input::get('data');
-		$user = $this->user->findOrFail($userId);
+		$user = $this->user->where('api_token', '=', $this->token)->first();
 		$rules = $this->phone->updateRules;
 		$validator = Validator::make($attr, $rules);
 
@@ -114,6 +116,7 @@ class PhoneController extends Controller {
 		}
 
 		//After the validation success, lets update the record.
+		$attr['user_id'] = $user->id;
 		$phone = $this->phone->findOrFail($phoneId);
 		$phone->fill($attr);
 		$phone->save();

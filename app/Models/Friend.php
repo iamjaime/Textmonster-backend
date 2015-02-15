@@ -25,4 +25,29 @@ class Friend extends Model {
 	 */
 	protected $hidden = [];	
 
+	
+	public $deleteFriendRules = [
+		'friend_id' => 'required'
+	];
+
+
+	/**
+	 * Get All friends for a specific user
+	 *
+	 * @param  int  $userId  The user id that we want friends for.
+	 * @return Response
+	 */
+	public function getFriendInfo($userId)
+	{
+		$friends = $this->where('user_id', '=', $userId)
+		->join('users', 'friends.id', '=', 'users.id')
+		->select(
+			'users.id as id',
+			'users.name as name',
+			'users.email as email'
+			)
+		->get();
+
+		return $friends;
+	}
 }

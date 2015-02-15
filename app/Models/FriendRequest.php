@@ -25,4 +25,16 @@ class FriendRequest extends Model {
 	 */
 	protected $hidden = [];	
 
+	public $acceptFriendRules = [
+		'request_id' => 'required'
+	];
+
+	public $makeFriendRules = [
+		'requested_user_id' => 'required'
+	];
+
+	public $declineFriendRules = [
+		'request_id' => 'required'
+	];
+
 }
