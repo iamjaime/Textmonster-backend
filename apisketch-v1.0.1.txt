@@ -12,6 +12,8 @@ A user has many orders
 
 A user has many messages
 
+A user has many friends
+
 ==================================================
 
 Services 
@@ -67,7 +69,7 @@ Friends
 GET     api/v1/friends                    ( list all friends from the authenticated user )
 DELETE  api/v1/friends/remove			  ( Delete a friend for authenticated user )
 
-GET     api/v1/friends/requests           ( list all friends requests for the authenticated user )
+GET     api/v1/friends/requests           ( list all friend requests for the authenticated user )
 POST    api/v1/friends/requests/accept    ( Accept a friend request for the authenticated user )
 POST    api/v1/friends/requests/make      ( Make a friend request from authenticated user )
 POST    api/v1/friends/requests/decline   ( Decline a friend request )
