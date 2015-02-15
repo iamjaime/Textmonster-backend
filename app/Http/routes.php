@@ -12,43 +12,41 @@
 */
 
 /**
- * Laravel Cashier (stripe) webhook controller
+ * Text Monster API Version 1.0.0
  */
-Route::group(['namespace' => 'Laravel\Cashier'], function(){
-	//Handles the IPN for stripe. (called webhooks in stripe)
-	//Route::post('service/stripe', 'WebhookController@handleWebhook');
-});
 
 /**
  * Default Namespace for all controllers
  */
 Route::group(['namespace' => 'App\Http\Controllers'], function(){
 
-Route::group(['prefix' => 'api/v1', 'namespace' => 'Api\v1'], function(){
+	/**
+	 * Unauthenticated Resources in the API
+	 */
+	Route::group(['prefix' => 'api/v1', 'namespace' => 'Api\v1'], function(){
 
-	//Login Users Unauthenticated route 
-	Route::post('users/login', 'UserController@authenticate');
+		//Login Users Unauthenticated route 
+		Route::post('users/login', 'UserController@authenticate');
 
-	//Signup Users Unauthenticated route
-	Route::post('users/signup', 'UserController@store');
+		//Signup Users Unauthenticated route
+		Route::post('users/signup', 'UserController@store');
 
-});
+		//Handles the IPN for stripe. (called webhooks in stripe)
+		Route::post('services/stripe', 'SubscriptionController@transaction');
+
+	});
 
 
 	/**
-	 * Text Monster API Version 1.0.0
-	 * Authenticated Resources
+	 * Authenticated Resources in the API
 	 */
 	Route::group(['prefix' => 'api/v1', 'namespace' => 'Api\v1', 'middleware' => 'auth.token'], function() { 
 
-		//List all services provided by text monster
+		//List all services provided by text monster for this specific user
 		Route::get('services', 'ServiceController@index');
 		
-		//lets check if the service is active for a user...
-		Route::post('service/active', 'SubscriptionController@isActive');
-
-		//Handles the IPN for stripe. (called webhooks in stripe)
-		Route::post('service/stripe', 'SubscriptionController@transaction');
+		//lets check if the service is active for this specific user...
+		Route::post('services/active', 'SubscriptionController@isActive');
 
 		//List all targets and allow target searching....
 		Route::get('targets', 'TargetController@index');
