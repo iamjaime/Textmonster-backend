@@ -13,6 +13,10 @@ use App\Models\Target;
 
 class TargetController extends Controller {
 
+	function __construct(Target $target){
+		$this->target = $target;
+	}
+
 	/**
 	 * Display a listing of the resource.
 	 *
@@ -20,7 +24,7 @@ class TargetController extends Controller {
 	 */
 	public function index()
 	{
-		$target = Target::paginate(20);
+		$target = $this->target->paginate(20);
 		return Response::json(['success' => true, 'data' => $target], 200);
 	}
 

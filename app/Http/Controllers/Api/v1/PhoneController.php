@@ -16,8 +16,10 @@ class PhoneController extends Controller {
 	
 	public $user;
 	public $phone;
+	public $token;
 
-	function __construct(User $user, Phone $phone){
+	function __construct(User $user, Phone $phone, Request $request){
+		$this->token = $request->header('X-AUTH-TOKEN');
 		$this->user = $user;
 		$this->phone = $phone;
 	}

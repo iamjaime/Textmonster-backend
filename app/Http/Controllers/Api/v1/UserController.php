@@ -9,14 +9,17 @@ use \Response;
 use \Input;
 use \Validator;
 use \Hash;
+use \Auth;
 
 use App\Models\User;
 
 class UserController extends Controller {
 
 	public $user;
-	
-	function __construct(Validator $validator, User $user){
+	public $token;
+
+	function __construct(Validator $validator, User $user, Request $request){
+		$this->token = $request->header('X-AUTH-TOKEN');
 		$this->user = $user;
 	}
 
@@ -27,7 +30,7 @@ class UserController extends Controller {
 	 */
 	public function index()
 	{
-		$users = $this->user->with('phones', 'subscriptions')->get();
+		$users = $this->user->with('phones', 'subscriptions')->where('api_token', '=', $this->token)->get();
 		return Response::json(['success' => true, 'data' => $users], 200);
 	}
 
@@ -77,7 +80,7 @@ class UserController extends Controller {
 	 */
 	public function show($id)
 	{
-		$user = $this->user->findOrFail($id);
+		$user = $this->user->where('api_token', '=', $this->token)->first();
 		return Response::json(['data' => $user], 200);
 	}
 
@@ -102,7 +105,7 @@ class UserController extends Controller {
 	{
 		$attr = Input::get('data');
 
-		$user = $this->user->findOrFail($id);
+		$user = $this->user->where('api_token', '=', $this->token)->first();
 		$rules = $this->user->updateRules;
 		
 		$validator = Validator::make($attr, $rules);
@@ -139,9 +142,78 @@ class UserController extends Controller {
 	 */
 	public function destroy($id)
 	{
-		$user = $this->user->findOrFail($id);
+		$user = $this->user->where('api_token', '=', $this->token)->first();
+		$id = $user->id;
 		$user->delete($id);
 		return Response::json(['success' => true],200);
 	}
 
+	/**
+	 * Authentiacte the user
+	 */
+	public function authenticate()
+	{
+		$attrs = Input::get('data');
+		$rules = $this->user->loginRules;
+		$validator = Validator::make($attrs, $rules);
+		if($validator->fails()){
+			$errors = $validator->messages();
+			return Response::json(['success' => false, 'errors' => $errors],400);
+		}
+		
+		//after the validation is successful, lets check the login credentials.
+		if (Auth::attempt(['email' => $attrs['email'], 'password' => $attrs['password']]))
+        {
+        	//lets make an auth token for them....
+        	$user = Auth::user();
+        	$token = hash('sha256', $this->random(10),false);
+        	$user->api_token = $token;
+        	$user->save();
+
+        	return Response::json([
+        		'success' => true, 
+        		'data' => $user
+        		], 200);    
+        }
+
+		return Response::json(['success' => false, 'errors' => 'The email address and password combination are invalid.'], 400);	
+	}
+
+	/**
+	 * Generate a more truly "random" alpha-numeric string.
+	 *
+	 * @param  int     $length
+	 * @return string
+	 */
+	private function random($length = 16)
+	{
+	    if (function_exists('openssl_random_pseudo_bytes'))
+	    {
+	        $bytes = openssl_random_pseudo_bytes($length * 2);
+
+	        if ($bytes === false)
+	        {
+	            throw new \RuntimeException('Unable to generate random string.');
+	        }
+
+	        return substr(str_replace(array('/', '+', '='), '', base64_encode($bytes)), 0, $length);
+	    }
+
+	    return $this->quickRandom($length);
+	}
+
+	/**
+	 * Generate a "random" alpha-numeric string.
+	 *
+	 * Should not be considered sufficient for cryptography, etc.
+	 *
+	 * @param  int     $length
+	 * @return string
+	 */
+	private function quickRandom($length = 16)
+	{
+	    $pool = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+
+	    return substr(str_shuffle(str_repeat($pool, 5)), 0, $length);
+	}
 }

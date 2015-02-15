@@ -24,10 +24,22 @@ Route::group(['namespace' => 'Laravel\Cashier'], function(){
  */
 Route::group(['namespace' => 'App\Http\Controllers'], function(){
 
+Route::group(['prefix' => 'api/v1', 'namespace' => 'Api\v1'], function(){
+
+	//Login Users Unauthenticated route 
+	Route::post('users/login', 'UserController@authenticate');
+
+	//Signup Users Unauthenticated route
+	Route::post('users/signup', 'UserController@store');
+
+});
+
+
 	/**
 	 * Text Monster API Version 1.0.0
+	 * Authenticated Resources
 	 */
-	Route::group(['prefix' => 'api/v1', 'namespace' => 'Api\v1'], function() { 
+	Route::group(['prefix' => 'api/v1', 'namespace' => 'Api\v1', 'middleware' => 'auth.token'], function() { 
 
 		//List all services provided by text monster
 		Route::get('services', 'ServiceController@index');

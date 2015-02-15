@@ -51,6 +51,11 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
 		'password_confirmation' => 'sometimes|required|min:6'
 	];
 
+	public $loginRules = [
+		'email' =>'required|email',
+		'password' => 'required|min:6',
+	];
+
 	public function Phones(){
 		return $this->hasMany('App\Models\Phone', 'user_id', 'id');
 	}
